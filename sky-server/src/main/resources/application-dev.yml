@@ -1,0 +1,87 @@
+sky:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: sky_take_out
+    username: root
+    password: YOUR_DEFAULT_PWD
+
+  alioss:
+    access-key-id: YOUR_ACCESS_KEY_ID
+    access-key-secret: YOUR_ACCESS_KEY_SECRET
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket-name: heimaweb-3-26
+
+  wechat:
+    app-id: YOUR_WECHAT_APP_ID
+    secret: YOUR_WECHAT_SECRET
+
+  shop:
+    baidu-ak: u8TEzD1pPrwA6TYsBCtC7yzxwPhCgr7s
+
+  # AI 助手提示词配置（可自定义角色和职责，不配置则使用 Java 代码中的默认值）
+  ai:
+    # 百炼 API Key（与 spring.ai.openai.api-key 使用同一环境变量）
+    api-key: ${DASHSCOPE_API_KEY:your-bailian-api-key}
+    role-prompt: "你是苍穹外卖的智能助手小团团，一个热心、可爱的点餐小助手。请以小团团的身份和语气与用户交流。"
+    duty-prompt: |
+      1. 根据用户需求推荐菜品和套餐，可以结合价格、口味、人数等因素给出建议，语气要热情可爱哦~
+      2. 回答关于菜品、订单、配送、支付等问题，耐心细致；
+      3. 当用户询问"我的订单"或搜索特定菜品时，请调用相应工具查询真实数据，不要编造信息；
+      4. 只回答与餐厅相关的问题，其他问题礼貌拒绝；
+      5. 回复简洁友好，使用中文，可以适当使用语气词如"呢"、"呀"、"哦"等；
+      6. 推荐菜品时可以加上"推荐给你哦~"、"这道菜超好吃的呢~"等活泼的表达。
+    # 向量模型配置（需要 embedding-enabled=true 才生效）
+    embedding-enabled: true
+    embedding-model: text-embedding-v2
+    embedding-base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    # embedding-api-key: 为空时复用 chat 的 apiKey（即 DASHSCOPE_API_KEY）
+
+    # Redis 向量库配置
+    vector-redis-host: ${spring.data.redis.host:localhost}
+    vector-redis-port: ${spring.data.redis.port:6379}
+    vector-redis-password: ${spring.data.redis.password:}
+    vector-redis-database: 1
+    vector-index-name: menu_vectors
+    vector-prefix: menu_doc
+    vector-init-schema: true
+
+    # RAG 检索增强生成提示词模板
+    # {context} = 向量检索到的菜单上下文, {question} = 用户问题
+    rag-prompt: |
+      你是苍穹外卖的智能助手小团团，一个热情可爱的点餐助手。以下是系统从菜单数据库中检索到的与用户问题最相关的菜品信息。
+
+      ## 检索到的菜单上下文
+      {context}
+
+      ## 用户问题
+      {question}
+
+      ## 回答要求
+      1. 只能基于上面的菜单上下文回答，不要编造不存在的菜品或信息。
+      2. 推荐具体菜品/套餐时，务必带上价格，可结合人数、口味给出搭配建议。
+      3. 语气要热情可爱，像亲切的服务员一样，适当使用"呢""呀""哦"等语气词。
+      4. 用中文回复，简洁实用，不要过度啰嗦。
+      5. 如果上下文信息不足以回答用户问题，请诚实说明，并建议用户换个问法或联系人工客服。
+      6. 推荐菜品时可以加上"强烈推荐哦~""这道菜超受欢迎的呢~"等活泼表达。
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: YOUR_DEFAULT_PWD
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+
+  ai:
+    openai:
+      # 阿里云百炼 DashScope API Key（环境变量 DASHSCOPE_API_KEY 优先）
+      api-key: ${DASHSCOPE_API_KEY:your-bailian-api-key}
