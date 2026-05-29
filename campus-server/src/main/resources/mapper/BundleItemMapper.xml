@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.BundleItemMapper">
+
+    <select id="getBundleIdsByItemIds" resultType="java.lang.Long">
+        SELECT DISTINCT bundle_id
+        FROM bundle_item
+        WHERE item_id IN
+        <foreach collection="itemIds" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </select>
+
+    <delete id="deleteByBundleIds">
+        DELETE FROM bundle_item
+        WHERE bundle_id IN
+        <foreach collection="bundleIds" item="bundleId" open="(" separator="," close=")">
+            #{bundleId}
+        </foreach>
+    </delete>
+
+    <insert id="insertBatch" parameterType="list">
+        insert into bundle_item (bundle_id, item_id, name, price, copies)
+        values
+        <foreach collection="bundleItems" item="bi" separator=",">
+            (#{bi.bundleId}, #{bi.itemId}, #{bi.name}, #{bi.price}, #{bi.copies})
+        </foreach>
+    </insert>
+</mapper>

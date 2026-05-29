@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.ChatHistoryMapper">
+
+    <!-- 建表（应用启动时自动执行） -->
+    <update id="createTableIfNotExists">
+        CREATE TABLE IF NOT EXISTS chat_history (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+            conversation_id VARCHAR(64) NOT NULL COMMENT '会话ID',
+            user_id BIGINT NULL COMMENT '用户ID',
+            message_type VARCHAR(16) NOT NULL COMMENT '消息类型: USER/ASSISTANT/SYSTEM',
+            content TEXT NOT NULL COMMENT '消息内容',
+            create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+            INDEX idx_conversation_id (conversation_id),
+            INDEX idx_user_id (user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI聊天历史记录表'
+    </update>
+
+    <!-- 向前兼容：已有表补充 user_id 列 -->
+    <update id="addUserIdColumnIfMissing">
+        ALTER TABLE chat_history ADD COLUMN user_id BIGINT NULL COMMENT '用户ID' AFTER conversation_id
+    </update>
+
+    <insert id="insert" parameterType="com.campus.trade.entity.ChatHistory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chat_history (conversation_id, user_id, message_type, content, create_time)
+        VALUES (#{conversationId}, #{userId}, #{messageType}, #{content}, #{createTime})
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO chat_history (conversation_id, user_id, message_type, content, create_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.conversationId}, #{item.userId}, #{item.messageType}, #{item.content}, #{item.createTime})
+        </foreach>
+    </insert>
+
+    <select id="getByConversationId" resultType="com.campus.trade.entity.ChatHistory">
+        SELECT id, conversation_id, user_id, message_type, content, create_time
+        FROM chat_history
+        WHERE conversation_id = #{conversationId}
+        ORDER BY create_time ASC
+        LIMIT #{limit}
+    </select>
+
+    <delete id="deleteByConversationId">
+        DELETE FROM chat_history WHERE conversation_id = #{conversationId}
+    </delete>
+
+    <update id="fillUserId">
+        UPDATE chat_history SET user_id = #{userId}
+        WHERE conversation_id = #{conversationId} AND user_id IS NULL
+    </update>
+
+    <select id="getConversationsByUserId" resultType="com.campus.trade.entity.ChatHistory">
+        SELECT c.id, c.conversation_id, c.user_id, c.message_type, c.content, c.create_time
+        FROM chat_history c
+        INNER JOIN (
+            SELECT conversation_id, MIN(create_time) AS first_time
+            FROM chat_history
+            WHERE user_id = #{userId}
+            GROUP BY conversation_id
+            ORDER BY first_time DESC
+        ) t ON c.conversation_id = t.conversation_id AND c.create_time = t.first_time
+    </select>
+
+</mapper>

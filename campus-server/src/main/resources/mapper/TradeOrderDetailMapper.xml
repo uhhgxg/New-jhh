@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.TradeOrderDetailMapper">
+
+    <insert id="insertBatch">
+        insert into order_detail (name, order_id, item_id, bundle_id, number, amount, image)
+        values
+        <foreach collection="orderDetailList" item="od" separator=",">
+            (#{od.name}, #{od.orderId}, #{od.itemId}, #{od.bundleId}, #{od.number}, #{od.amount}, #{od.image})
+        </foreach>
+    </insert>
+
+    <select id="getByOrderId" resultType="com.campus.trade.entity.OrderDetail">
+        select * from order_detail where order_id = #{orderId}
+    </select>
+
+    <select id="getSalesTop10" resultType="com.campus.trade.dto.ItemSalesDTO">
+        select od.name, sum(od.number) as number
+        from order_detail od
+        inner join trade_order o on od.order_id = o.id
+        where o.trade_status = 4
+          and o.trade_time &gt;= #{begin}
+          and o.trade_time &lt;= #{end}
+        group by od.name
+        order by number desc
+        limit 10
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+campus:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: campus_trading
+    username: root
+    password: YOUR_DEFAULT_PWD
+
+  alioss:
+    access-key-id: YOUR_ACCESS_KEY_ID
+    access-key-secret: YOUR_ACCESS_KEY_SECRET
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket-name: heimaweb-3-26
+
+  wechat:
+    app-id: YOUR_WECHAT_APP_ID
+    secret: YOUR_WECHAT_SECRET
+
+  ai:
+    api-key: ${DASHSCOPE_API_KEY:your-bailian-api-key}
+    role-prompt: "你是校园二手交易平台的智能助手，一个热心、可爱的校园二手交易助手。请以小助手的身份和语气与用户交流。"
+    duty-prompt: |
+      1. 根据用户需求推荐二手商品，可以结合价格、新旧程度、分类等因素给出建议，语气要热情可爱哦~
+      2. 回答关于商品、交易订单、支付、物流等问题，耐心细致；
+      3. 当用户询问"我的订单"或搜索特定商品时，请调用相应工具查询真实数据，不要编造信息；
+      4. 只回答与校园二手交易相关的问题，其他问题礼貌拒绝；
+      5. 回复简洁友好，使用中文，可以适当使用语气词如"呢"、"呀"、"哦"等；
+      6. 推荐商品时可以加上"推荐给你哦~"、"这个商品很划算的呢~"等活泼的表达。
+    embedding-enabled: true
+    embedding-model: text-embedding-v2
+    embedding-base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+
+    vector-redis-host: ${spring.data.redis.host:localhost}
+    vector-redis-port: ${spring.data.redis.port:6379}
+    vector-redis-password: ${spring.data.redis.password:}
+    vector-redis-database: 1
+    vector-index-name: item_vectors
+    vector-prefix: item_doc
+    vector-init-schema: true
+
+    rag-prompt: |
+      你是校园二手交易平台的智能助手，一个热情可爱的二手交易助手。以下是系统从商品数据库中检索到的与用户问题最相关的商品信息。
+
+      ## 检索到的商品上下文
+      {context}
+
+      ## 用户问题
+      {question}
+
+      ## 回答要求
+      1. 只能基于上面的商品上下文回答，不要编造不存在的商品或信息。
+      2. 推荐具体商品时，务必带上价格和新旧程度，可结合用户需求给出购买建议。
+      3. 语气要热情可爱，像亲切的校园助手一样，适当使用"呢""呀""哦"等语气词。
+      4. 用中文回复，简洁实用，不要过度啰嗦。
+      5. 如果上下文信息不足以回答用户问题，请诚实说明，并建议用户换个问法或联系人工客服。
+      6. 推荐商品时可以加上"强烈推荐哦~""这个商品超值的呢~"等活泼表达。
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: YOUR_DEFAULT_PWD
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+
+  ai:
+    openai:
+      api-key: ${DASHSCOPE_API_KEY:your-bailian-api-key}

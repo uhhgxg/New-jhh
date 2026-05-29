@@ -1,4 +1,4 @@
-# Welcome to Sky Take-Out
+# Welcome to CampusTrade - 校园二手交易平台
 
 ## How We Use Claude
 
@@ -16,9 +16,8 @@ Top MCP Servers:
 ## Your Setup Checklist
 
 ### Codebases
-- [ ] sky-take-out — https://gitee.com/play-badminton-baby/sky-take-out.git (Spring Boot backend)
+- [ ] campus-trade — 校园二手交易平台后端 (this project)
 - [ ] project-sky-admin-vue-ts — admin frontend (sibling directory)
-- [ ] syk-take-out-new — newer iteration (sibling directory)
 
 ### MCP Servers to Activate
 _(none yet — add as the team adopts them)_

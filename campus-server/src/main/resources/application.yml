@@ -1,0 +1,81 @@
+# ============================================
+# 校园二手交易平台 - 主配置文件
+# ============================================
+
+spring:
+  application:
+    name: campus-trade
+
+server:
+  port: 8087
+
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    druid:
+      driver-class-name: ${campus.datasource.driver-class-name}
+      url: jdbc:mysql://${campus.datasource.host}:${campus.datasource.port}/${campus.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${campus.datasource.username}
+      password: ${campus.datasource.password}
+
+  data:
+    redis:
+      host: ${spring.data.redis.host}
+      port: ${spring.data.redis.port}
+      password: ${spring.data.redis.password}
+      database: ${spring.data.redis.database}
+      timeout: ${spring.data.redis.timeout}
+      lettuce:
+        pool:
+          max-active: ${spring.data.redis.lettuce.pool.max-active}
+          max-wait: ${spring.data.redis.lettuce.pool.max-wait}
+          max-idle: ${spring.data.redis.lettuce.pool.max-idle}
+          min-idle: ${spring.data.redis.lettuce.pool.min-idle}
+
+  ai:
+    openai:
+      api-key: ${DASHSCOPE_API_KEY}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      chat:
+        options:
+          model: qwen-plus
+          temperature: 0.7
+      embedding:
+        enabled: false
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.campus.trade.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      campus:
+        trade:
+          mapper: debug
+          service: info
+          controller: info
+
+campus:
+  jwt:
+    admin-secret-key: itcast
+    admin-ttl: 7200000
+    admin-token-name: token
+
+    user-secret-key: itcast
+    user-ttl: 7200000
+    user-token-name: authentication
+
+  alioss:
+    access-key-id: ${campus.alioss.access-key-id}
+    access-key-secret: ${campus.alioss.access-key-secret}
+    endpoint: ${campus.alioss.access-endpoint}
+    bucket-name: ${campus.alioss.bucket-name}
+
+  wechat:
+    app-id: ${campus.wechat.app-id}
+    secret: ${campus.wechat.secret}

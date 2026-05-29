@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.TradeOrderMapper">
+
+    <insert id="insert" parameterType="com.campus.trade.entity.TradeOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into trade_order
+        (trade_no, trade_status, buyer_id, seller_id, item_id, delivery_address_id, quantity,
+         trade_time, payment_time, payment_method, total_amount, shipping_fee, trade_remark,
+         tracking_number, confirm_time, phone, address, user_name, consignee,
+         cancel_reason, rejection_reason, cancel_time)
+        values (#{tradeNo}, #{tradeStatus}, #{buyerId}, #{sellerId}, #{itemId}, #{deliveryAddressId}, #{quantity},
+                #{tradeTime}, #{paymentTime}, #{paymentMethod}, #{totalAmount}, #{shippingFee}, #{tradeRemark},
+                #{trackingNumber}, #{confirmTime}, #{phone}, #{address}, #{userName}, #{consignee},
+                #{cancelReason}, #{rejectionReason}, #{cancelTime})
+    </insert>
+
+    <select id="getByUserId" resultType="com.campus.trade.entity.TradeOrder">
+        select * from trade_order where buyer_id = #{userId}
+    </select>
+
+    <select id="getByNumber" resultType="com.campus.trade.entity.TradeOrder">
+        select * from trade_order where trade_no = #{tradeNo}
+    </select>
+
+    <select id="getById" resultType="com.campus.trade.entity.TradeOrder">
+        select * from trade_order where id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.campus.trade.entity.TradeOrder">
+        update trade_order
+        <set>
+            <if test="tradeStatus != null">trade_status = #{tradeStatus},</if>
+            <if test="cancelReason != null">cancel_reason = #{cancelReason},</if>
+            <if test="rejectionReason != null">rejection_reason = #{rejectionReason},</if>
+            <if test="cancelTime != null">cancel_time = #{cancelTime},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+            <if test="paymentTime != null">payment_time = #{paymentTime},</if>
+            <if test="trackingNumber != null">tracking_number = #{trackingNumber},</if>
+            <if test="confirmTime != null">confirm_time = #{confirmTime},</if>
+            <if test="consignee != null">consignee = #{consignee},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="shippingFee != null">shipping_fee = #{shippingFee},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="pageQuery" resultType="com.campus.trade.entity.TradeOrder">
+        select * from trade_order
+        <where>
+            <if test="tradeNo != null and tradeNo != ''">
+                and trade_no like concat('%', #{tradeNo}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like concat('%', #{phone}, '%')
+            </if>
+            <if test="tradeStatus != null">
+                and trade_status = #{tradeStatus}
+            </if>
+            <if test="buyerId != null">
+                and buyer_id = #{buyerId}
+            </if>
+            <if test="sellerId != null">
+                and seller_id = #{sellerId}
+            </if>
+            <if test="beginTime != null">
+                and trade_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and trade_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by trade_time desc
+    </select>
+
+    <select id="sumByMap" resultType="java.math.BigDecimal">
+        select sum(total_amount) from trade_order
+        <where>
+            <if test="tradeStatus != null">
+                and trade_status = #{tradeStatus}
+            </if>
+            <if test="beginTime != null">
+                and trade_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and trade_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from trade_order
+        <where>
+            <if test="tradeStatus != null">
+                and trade_status = #{tradeStatus}
+            </if>
+            <if test="beginTime != null">
+                and trade_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and trade_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.ChatMessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chat_message (sender_id, receiver_id, item_id, content, message_type, send_time, is_read)
+        VALUES (#{senderId}, #{receiverId}, #{itemId}, #{content}, #{messageType}, #{sendTime}, #{isRead})
+    </insert>
+
+    <select id="getBySenderAndReceiver" resultType="com.campus.trade.entity.ChatMessage">
+        SELECT * FROM chat_message
+        WHERE (sender_id = #{senderId} AND receiver_id = #{receiverId})
+           OR (sender_id = #{receiverId} AND receiver_id = #{senderId})
+        ORDER BY send_time ASC
+    </select>
+
+    <select id="getByItemId" resultType="com.campus.trade.entity.ChatMessage">
+        SELECT * FROM chat_message
+        WHERE item_id = #{itemId}
+          AND ((sender_id = #{senderId} AND receiver_id = #{receiverId})
+           OR (sender_id = #{receiverId} AND receiver_id = #{senderId}))
+        ORDER BY send_time ASC
+    </select>
+
+    <update id="markAsRead">
+        UPDATE chat_message SET is_read = 1
+        WHERE sender_id = #{senderId} AND receiver_id = #{receiverId} AND is_read = 0
+    </update>
+</mapper>

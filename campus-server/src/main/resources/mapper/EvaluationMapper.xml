@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.trade.mapper.EvaluationMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO evaluation (order_id, reviewer_id, reviewee_id, rating, content, create_time, type)
+        VALUES (#{orderId}, #{reviewerId}, #{revieweeId}, #{rating}, #{content}, #{createTime}, #{type})
+    </insert>
+
+    <select id="getByOrderId" resultType="com.campus.trade.entity.Evaluation">
+        SELECT * FROM evaluation WHERE order_id = #{orderId}
+    </select>
+
+    <select id="getByRevieweeId" resultType="com.campus.trade.vo.EvaluationVO">
+        SELECT * FROM evaluation WHERE reviewee_id = #{revieweeId}
+        ORDER BY create_time DESC
+    </select>
+</mapper>
